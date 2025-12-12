@@ -27,7 +27,7 @@ export class LoginComponent {
       setTimeout(() => {
         console.log('Login successful', this.loginForm.value)
         this.isLoading = false
-        // this.router.navigate(['/dashboard'])
+        this.router.navigate(['/usuarios'])
       }, 1500)
     } else {
       this.loginForm.markAllAsTouched()
