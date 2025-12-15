@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LaboratorioService } from '../../../services/laboratorio.service';
-import { Laboratorio } from '../../../models/laboratorio';
+import { Laboratorio, LaboratorioDTO } from '../../../models/laboratorio';
 
 @Component({
   selector: 'app-lab-form',
@@ -45,17 +45,7 @@ import { Laboratorio } from '../../../models/laboratorio';
         </div>
       </form>
     </div>
-  `,
-  styles: [`
-    .container { padding: 20px; max-width: 500px; }
-    div { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input { width: 100%; padding: 8px; box-sizing: border-box; }
-    .actions { margin-top: 20px; }
-    .btn-save { background-color: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-    .btn-save:disabled { background-color: #ccc; }
-    .btn-cancel { background-color: #6c757d; color: white; padding: 10px 20px; border: none; margin-left: 10px; cursor: pointer; }
-  `]
+  `
 })
 export class LabFormComponent implements OnInit {
   form: FormGroup;
@@ -71,9 +61,9 @@ export class LabFormComponent implements OnInit {
     this.form = this.fb.group({
       nombre: ['', Validators.required],
       telefono: ['', Validators.required],
-      webUrl: ['', Validators.required], // Puedes quitar Validators.required si es opcional
+      webUrl: [''],
       email: ['', [Validators.required, Validators.email]],
-      convenioId: [null]
+      convenioId: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -82,9 +72,18 @@ export class LabFormComponent implements OnInit {
     if (id) {
       this.esEdicion = true;
       this.idEditar = Number(id);
-      this.laboratorioService.getById(this.idEditar).subscribe(lab => {
+
+      this.laboratorioService.obtenerLaboratorioPorId(this.idEditar).subscribe(lab => {
         if (lab) {
-          this.form.patchValue(lab);
+          const dataForm = {
+            nombre: lab.nombre,
+            telefono: lab.telefono,
+            webUrl: lab.webUrl,
+            email: lab.email,
+            convenioId: lab.convenio ? lab.convenio.id : null
+          };
+          
+          this.form.patchValue(dataForm);
         }
       });
     }
@@ -92,15 +91,23 @@ export class LabFormComponent implements OnInit {
 
   guardar() {
     if (this.form.valid) {
-      const laboratorio: Laboratorio = this.form.value;
+      const payload: LaboratorioDTO = {
+        nombre: this.form.value.nombre,
+        telefono: this.form.value.telefono,
+        webUrl: this.form.value.webUrl,
+        email: this.form.value.email,
+        convenioId: this.form.value.convenioId
+      };
 
       if (this.esEdicion && this.idEditar) {
-        this.laboratorioService.update(this.idEditar, laboratorio).subscribe(() => {
-          this.router.navigate(['/laboratorios']);
+        this.laboratorioService.actualizarLaboratorio(this.idEditar, payload).subscribe({
+          next: () => this.router.navigate(['/laboratorios']),
+          error: (err) => console.error('Error al actualizar laboratorio', err)
         });
       } else {
-        this.laboratorioService.create(laboratorio).subscribe(() => {
-          this.router.navigate(['/laboratorios']);
+        this.laboratorioService.guardarLaboratorio(payload).subscribe({
+          next: () => this.router.navigate(['/laboratorios']),
+          error: (err) => console.error('Error al crear', err)
         });
       }
     }
