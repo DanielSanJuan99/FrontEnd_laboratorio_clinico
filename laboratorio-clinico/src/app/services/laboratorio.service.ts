@@ -1,13 +1,14 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Laboratorio, LaboratorioDTO } from '../models/laboratorio';
-import { of, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LaboratorioService {
-  private apiUrl = 'http://localhost:8081/api/laboratorios';
+  private apiUrl = environment.apiUrlLaboratorios;
 
   constructor(private http: HttpClient) { }
 
