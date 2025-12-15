@@ -1,69 +1,30 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { Laboratorio } from '../models/laboratorio';
-import { of, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Laboratorio, LaboratorioDTO } from '../models/laboratorio';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LaboratorioService {
-  private key = 'my_app_laboratorios';
+  private apiUrl = environment.apiUrlLaboratorios;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    if (isPlatformBrowser(this.platformId)) {
-      if (!localStorage.getItem(this.key)) {
-        localStorage.setItem(this.key, JSON.stringify([]));
-      }
-    }
+  constructor(private http: HttpClient) { }
+
+  obtenerLaboratorios(): Observable<Laboratorio[]> {
+    return this.http.get<Laboratorio[]>(this.apiUrl);
   }
 
-  private getLocalStorage(): Laboratorio[] {
-    if (!isPlatformBrowser(this.platformId)) {
-      return [];
-    }
-    const data = localStorage.getItem(this.key);
-    return data ? JSON.parse(data) : [];
+  obtenerLaboratorioPorId(id: number): Observable<Laboratorio> {
+    return this.http.get<Laboratorio>(`${this.apiUrl}/${id}`);
   }
 
-  getAll(): Observable<Laboratorio[]> {
-    return of(this.getLocalStorage());
+  guardarLaboratorio(laboratorio: LaboratorioDTO): Observable<Laboratorio> {
+    return this.http.post<Laboratorio>(this.apiUrl, laboratorio);
   }
 
-  getById(id: number): Observable<Laboratorio | undefined> {
-    const labs = this.getLocalStorage();
-    return of(labs.find(l => l.id === id));
-  }
-
-  create(lab: Laboratorio): Observable<Laboratorio> {
-    const labs = this.getLocalStorage();
-    lab.id = new Date().getTime(); 
-    labs.push(lab);
-    
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(this.key, JSON.stringify(labs));
-    }
-    return of(lab);
-  }
-
-  update(id: number, lab: Laboratorio): Observable<Laboratorio> {
-    let labs = this.getLocalStorage();
-    const index = labs.findIndex(l => l.id === id);
-    if (index !== -1) {
-      lab.id = id;
-      labs[index] = lab;
-      if (isPlatformBrowser(this.platformId)) {
-        localStorage.setItem(this.key, JSON.stringify(labs));
-      }
-    }
-    return of(lab);
-  }
-
-  delete(id: number): Observable<boolean> {
-    let labs = this.getLocalStorage();
-    const nuevosLabs = labs.filter(l => l.id !== id);
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(this.key, JSON.stringify(nuevosLabs));
-    }
-    return of(true);
+  actualizarLaboratorio(id: number, laboratorio: LaboratorioDTO): Observable<Laboratorio> {
+    return this.http.put<Laboratorio>(`${this.apiUrl}/${id}`, laboratorio);
   }
 }

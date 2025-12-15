@@ -1,0 +1,11 @@
+.card {
+  border-radius: 12px; /* Bordes más redondeados para look moderno */
+  background-color: #ffffff;
+}
+
+.btn-primary {
+  /* Puedes ajustar este color al color principal de tu marca */
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 500;
+}

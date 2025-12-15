@@ -3,8 +3,12 @@ import { UsuarioListComponent } from './features/usuarios/usuario-list/usuario-l
 import { UsuarioFormComponent } from './features/usuarios/usuario-form/usuario-form.component';
 import { LabListComponent } from './features/laboratorios/lab-list/lab-list.component';
 import { LabFormComponent } from './features/laboratorios/lab-form/lab-form.component';
+import { LoginComponent } from './features/auth/login/login.component';
 
 export const routes: Routes = [
+  // Ruta de Login
+  { path: 'login', component: LoginComponent },
+
   // Rutas de Usuarios
   { path: 'usuarios', component: UsuarioListComponent },
   { path: 'usuarios/crear', component: UsuarioFormComponent },
@@ -16,6 +20,8 @@ export const routes: Routes = [
   { path: 'laboratorios/editar/:id', component: LabFormComponent },
 
   // Ruta por defecto
-  { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
-  { path: '**', redirectTo: 'usuarios' }
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // Ruta para manejar rutas no definidas
+  { path: '**', redirectTo: 'login' }
 ];
