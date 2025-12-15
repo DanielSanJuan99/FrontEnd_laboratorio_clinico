@@ -3,40 +3,66 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario.service';
-import { Usuario } from '../../../models/usuario';
 
 @Component({
   selector: 'app-usuario-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="container">
-      <h2>{{ esEdicion ? 'Editar' : 'Crear' }} Usuario</h2>
-      
-      <form [formGroup]="form" (ngSubmit)="guardar()">
-        <div>
-          <label>Nombre:</label>
-          <input formControlName="nombre" type="text">
+<div class="container mt-4 d-flex justify-content-center">
+      <div class="card shadow-sm border-0" style="width: 100%; max-width: 600px;">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+          <h3 class="fw-bold">{{ esEdicion ? 'Editar' : 'Crear' }} Usuario</h3>
         </div>
-        <div>
-          <label>Apellido:</label>
-          <input formControlName="apellido" type="text">
+        
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="guardar()">
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre</label>
+                <input formControlName="nombre" type="text" class="form-control" [class.is-invalid]="esInvalido('nombre')">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Apellido</label>
+                <input formControlName="apellido" type="text" class="form-control" [class.is-invalid]="esInvalido('apellido')">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input formControlName="email" type="email" class="form-control" [class.is-invalid]="esInvalido('email')">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input formControlName="password" type="password" class="form-control" 
+                     placeholder="{{ esEdicion ? '(Dejar en blanco para mantener)' : '' }}">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">ID Rol</label>
+                <input formControlName="rolId" type="number" class="form-control" placeholder="Ej: 1">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">ID Laboratorio</label>
+                <input formControlName="laboratorioId" type="number" class="form-control" placeholder="Ej: 5">
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" (click)="volver()" class="btn btn-secondary">Cancelar</button>
+              <button type="submit" [disabled]="form.invalid" class="btn btn-primary">
+                {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+              </button>
+            </div>
+
+          </form>
         </div>
-        <div>
-          <label>Email:</label>
-          <input formControlName="email" type="email">
-        </div>
-        <button type="submit" [disabled]="form.invalid">Guardar</button>
-        <button type="button" (click)="volver()">Cancelar</button>
-      </form>
+      </div>
     </div>
-  `,
-  styles: [`
-    .container { padding: 20px; max-width: 400px; }
-    div { margin-bottom: 10px; }
-    input { width: 100%; padding: 5px; }
-    button { margin-right: 10px; padding: 5px 10px; }
-  `]
+  `
 })
 export class UsuarioFormComponent implements OnInit {
   form: FormGroup;
@@ -53,7 +79,9 @@ export class UsuarioFormComponent implements OnInit {
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      // Agrega más campos si necesitas
+      password: [''],
+      rolId: [null, [Validators.required, Validators.min(1)]],
+      laboratorioId: [null]
     });
   }
 
@@ -63,24 +91,47 @@ export class UsuarioFormComponent implements OnInit {
     if (id) {
       this.esEdicion = true;
       this.idEditar = Number(id);
-      this.usuarioService.getById(this.idEditar).subscribe(usuario => {
+      this.usuarioService.obtenerUsuarioPorId(this.idEditar).subscribe(usuario => {
         if (usuario) {
-          this.form.patchValue(usuario); // Rellena el formulario
+          this.form.patchValue({
+            nombre: usuario.nombre,
+            apellido: usuario.apellido,
+            email: usuario.email,
+            password: '',
+            rolId: usuario.rol ? usuario.rol.id : null,
+            laboratorioId: usuario.laboratorio ? usuario.laboratorio.id : null
+          });
+
+          this.form.get('password')?.clearValidators();
+          this.form.get('password')?.updateValueAndValidity();
         }
       });
+    } else {
+      this.form.get('password')?.addValidators([Validators.required, Validators.minLength(6)]);
     }
   }
 
   guardar() {
     if (this.form.valid) {
-      const usuario: Usuario = this.form.value;
+      const payload: any = {
+        nombre: this.form.value.nombre,
+        apellido: this.form.value.apellido,
+        email: this.form.value.email,
+        password: this.form.value.password,
+        rolId: this.form.value.rolId,
+        laboratorioId: this.form.value.laboratorioId
+      }
+
+      if (this.esEdicion && !payload.password) {
+        delete payload.password;
+      }
 
       if (this.esEdicion && this.idEditar) {
-        this.usuarioService.update(this.idEditar, usuario).subscribe(() => {
+        this.usuarioService.actualizarUsuario(this.idEditar, payload).subscribe(() => {
           this.router.navigate(['/usuarios']);
         });
       } else {
-        this.usuarioService.create(usuario).subscribe(() => {
+        this.usuarioService.crearUsuario(payload).subscribe(() => {
           this.router.navigate(['/usuarios']);
         });
       }
@@ -89,5 +140,10 @@ export class UsuarioFormComponent implements OnInit {
 
   volver() {
     this.router.navigate(['/usuarios']);
+  }
+
+  esInvalido(campo: string): boolean {
+    const control = this.form.get(campo);
+    return !!(control?.invalid && control?.touched);
   }
 }

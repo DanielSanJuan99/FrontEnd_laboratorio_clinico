@@ -9,38 +9,63 @@ import { Usuario } from '../../../models/usuario';
   standalone: true,
   imports: [CommonModule, RouterModule], // Importar módulos necesarios
   template: `
-    <div class="container">
-      <h2>Listado de Usuarios</h2>
-      <button routerLink="/usuarios/crear" class="btn-crear">Nuevo Usuario</button>
+<div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Listado de Usuarios</h2>
+        <button routerLink="/usuarios/crear" class="btn btn-primary">
+          <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+        </button>
+      </div>
       
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of usuarios">
-            <td>{{ user.nombre }} {{ user.apellido }}</td>
-            <td>{{ user.email }}</td>
-            <td>
-              <button [routerLink]="['/usuarios/editar', user.id]">Editar</button>
-              <button (click)="eliminar(user.id)">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          <table class="table table-hover table-striped mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre Completo</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Laboratorio</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of usuarios">
+                <td class="align-middle fw-medium">{{ user.nombre }} {{ user.apellido }}</td>
+                <td class="align-middle">{{ user.email }}</td>
+                
+                <td class="align-middle">
+                  <span class="badge bg-secondary" *ngIf="user.rol">
+                    {{ user.rol.nombre || 'ID: ' + user.rol.id }}
+                  </span>
+                  <span *ngIf="!user.rol" class="text-muted small">-</span>
+                </td>
+
+                <td class="align-middle">
+                  <span class="badge bg-info text-dark" *ngIf="user.laboratorio">
+                    {{ user.laboratorio.nombre || 'ID: ' + user.laboratorio.id }}
+                  </span>
+                  <span *ngIf="!user.laboratorio" class="text-muted small">Sin asignar</span>
+                </td>
+
+                <td class="align-middle text-end">
+                  <button [routerLink]="['/usuarios/editar', user.id]" class="btn btn-sm btn-outline-primary me-2">
+                    Editar
+                  </button>
+                  <button (click)="eliminar(user.id)" class="btn btn-sm btn-outline-danger">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="usuarios.length === 0">
+                <td colspan="5" class="text-center py-4 text-muted">No hay usuarios registrados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  `,
-  styles: [`
-    .container { padding: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .btn-crear { background-color: green; color: white; padding: 10px; margin-bottom: 10px; }
-    button { margin-right: 5px; cursor: pointer;}
-  `]
+  `
 })
 export class UsuarioListComponent implements OnInit {
   usuarios: Usuario[] = [];
@@ -52,15 +77,15 @@ export class UsuarioListComponent implements OnInit {
   }
 
   cargarUsuarios() {
-    this.usuarioService.getAll().subscribe(data => {
+    this.usuarioService.obtenerUsuarios().subscribe(data => {
       this.usuarios = data;
     });
   }
 
   eliminar(id: number) {
     if (confirm('¿Estás seguro de eliminar este usuario?')) {
-      this.usuarioService.delete(id).subscribe(() => {
-        this.cargarUsuarios(); // Recargar la lista
+      this.usuarioService.eliminarUsuario(id).subscribe(() => {
+        this.cargarUsuarios();
       });
     }
   }
