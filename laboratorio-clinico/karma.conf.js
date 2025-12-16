@@ -14,7 +14,6 @@ module.exports = function (config) {
       clearContext: false // Deja visible la salida de Jasmine en el navegador
     },
     coverageReporter: {
-      // ⚠️ IMPORTANTE: Asegúrate que esta ruta coincida con la carpeta que ya tienes
       dir: require('path').join(__dirname, './coverage/laboratorio-clinico'),
       subdir: '.',
       reporters: [

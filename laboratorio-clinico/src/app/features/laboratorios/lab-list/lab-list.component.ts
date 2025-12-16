@@ -74,11 +74,9 @@ export class LabListComponent implements OnInit {
   }
 
   cargarLaboratorios() {
-    this.laboratorioService.obtenerLaboratorios().subscribe(data => {
-      this.laboratorioService.obtenerLaboratorios().subscribe({
-        next: (data) => this.laboratorios = data,
-        error: (err) => console.error('Error al cargar laboratorios', err)
-      })
-    });
+    this.laboratorioService.obtenerLaboratorios().subscribe({
+      next: (data) => this.laboratorios = data,
+      error: (err) => console.error('Error al cargar laboratorios', err)
+    })
   }
 }

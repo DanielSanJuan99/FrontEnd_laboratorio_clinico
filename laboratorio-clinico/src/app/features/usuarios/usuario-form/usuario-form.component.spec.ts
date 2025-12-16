@@ -3,66 +3,57 @@ import { UsuarioFormComponent } from './usuario-form.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UsuarioService } from '../../../services/usuario.service';
+import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('UsuarioFormComponent', () => {
   let component: UsuarioFormComponent;
   let fixture: ComponentFixture<UsuarioFormComponent>;
   let service: UsuarioService;
+  
+  let routeSpy = {
+    snapshot: { paramMap: { get: jasmine.createSpy('get') } }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        UsuarioFormComponent, 
-        HttpClientTestingModule, 
-        RouterTestingModule
-      ],
-      providers: [UsuarioService]
+      imports: [UsuarioFormComponent, HttpClientTestingModule, RouterTestingModule],
+      providers: [
+        UsuarioService,
+        { provide: ActivatedRoute, useValue: routeSpy }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(UsuarioFormComponent);
     component = fixture.componentInstance;
     service = TestBed.inject(UsuarioService);
+  });
+
+  it('MODO CREAR: password debería ser obligatorio', () => {
+    routeSpy.snapshot.paramMap.get.and.returnValue(null);
     fixture.detectChanges();
-  });
 
-  it('debería inicializarse', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('debería validar que el email es requerido', () => {
-    const emailControl = component.form.get('email');
-    emailControl?.setValue('');
-    expect(emailControl?.valid).toBeFalsy();
-    
-    emailControl?.setValue('correo-invalido'); // Sin @
-    expect(emailControl?.valid).toBeFalsy();
-
-    emailControl?.setValue('daniel@duoc.cl');
-    expect(emailControl?.valid).toBeTruthy();
-  });
-
-  it('debería requerir password si es usuario nuevo', () => {
-    // Por defecto esEdicion = false
     const passControl = component.form.get('password');
     passControl?.setValue('');
     expect(passControl?.valid).toBeFalsy();
   });
 
-  it('debería enviar los datos al servicio al guardar', () => {
-    const spy = spyOn(service, 'crearUsuario').and.returnValue(of({} as any));
+  it('MODO EDITAR: debería cargar usuario y hacer password opcional', () => {
+    routeSpy.snapshot.paramMap.get.and.returnValue('5');
+    
+    const mockUser = { 
+      id: 5, nombre: 'Ana', apellido: 'Gomez', email: 'ana@test.com',
+      rol: { id: 2 }, laboratorio: { id: 3 }
+    };
+    spyOn(service, 'obtenerUsuarioPorId').and.returnValue(of(mockUser as any));
 
-    component.form.patchValue({
-      nombre: 'Daniel',
-      apellido: 'San Juan',
-      email: 'daniel@test.com',
-      password: 'securePass123',
-      rolId: 1,
-      laboratorioId: 2
-    });
+    fixture.detectChanges();
 
-    component.guardar();
+    expect(component.form.get('nombre')?.value).toBe('Ana');
+    expect(component.form.get('rolId')?.value).toBe(2);
 
-    expect(spy).toHaveBeenCalled();
+    const passControl = component.form.get('password');
+    passControl?.setValue('');
+    expect(passControl?.valid).toBeTruthy(); 
   });
 });

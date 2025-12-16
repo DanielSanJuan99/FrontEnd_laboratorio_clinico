@@ -31,31 +31,25 @@ describe('UsuarioListComponent', () => {
     ];
     spyOn(service, 'obtenerUsuarios').and.returnValue(of(dummyUsers));
 
-    fixture.detectChanges(); // Dispara ngOnInit
+    fixture.detectChanges();
 
     expect(component.usuarios.length).toBe(1);
   });
 
   it('debería eliminar un usuario si se confirma el diálogo', () => {
-    // 1. Simulamos que el usuario dice "SI" al confirm
     spyOn(window, 'confirm').and.returnValue(true);
-    
-    // 2. Simulamos la llamada al servicio de eliminar
+
     const deleteSpy = spyOn(service, 'eliminarUsuario').and.returnValue(of(void 0));
-    
-    // 3. Simulamos la recarga de usuarios después de borrar
+
     const loadSpy = spyOn(component, 'cargarUsuarios');
 
-    // Acción
     component.eliminar(123);
 
-    // Verificaciones
     expect(deleteSpy).toHaveBeenCalledWith(123);
     expect(loadSpy).toHaveBeenCalled();
   });
 
   it('NO debería eliminar si el usuario cancela el diálogo', () => {
-    // Simulamos que el usuario dice "NO" (Cancelar)
     spyOn(window, 'confirm').and.returnValue(false);
     const deleteSpy = spyOn(service, 'eliminarUsuario');
 

@@ -3,7 +3,7 @@ import { LabListComponent } from './lab-list.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing'; // Necesario para routerLink
 import { LaboratorioService } from '../../../services/laboratorio.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('LabListComponent', () => {
   let component: LabListComponent;
@@ -36,14 +36,23 @@ describe('LabListComponent', () => {
       { id: 2, nombre: 'Lab B', telefono: '222', email: 'b@b.com', webUrl: 'www.b.com' }
     ];
 
-    // Espiamos el servicio para que no llame al backend real
     const spy = spyOn(service, 'obtenerLaboratorios').and.returnValue(of(dummyLabs));
 
-    // Ejecutamos la detección de cambios (dispara ngOnInit)
     fixture.detectChanges();
 
     expect(spy).toHaveBeenCalled();
     expect(component.laboratorios.length).toBe(2);
     expect(component.laboratorios).toEqual(dummyLabs);
   });
+
+  it('debería manejar errores del servidor al cargar laboratorios', () => {
+    spyOn(service, 'obtenerLaboratorios').and.returnValue(throwError(() => new Error('Error 500')));
+  
+    const consoleSpy = spyOn(console, 'error');
+
+    component.cargarLaboratorios();
+
+    expect(consoleSpy).toHaveBeenCalled();
+  });
+
 });
