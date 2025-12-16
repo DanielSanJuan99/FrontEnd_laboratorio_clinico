@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Laboratorio, LaboratorioDTO } from '../models/laboratorio';
 import { Observable } from 'rxjs';
