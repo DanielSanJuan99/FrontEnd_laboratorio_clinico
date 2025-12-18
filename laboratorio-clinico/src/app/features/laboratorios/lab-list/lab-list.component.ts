@@ -79,4 +79,18 @@ export class LabListComponent implements OnInit {
       error: (err) => console.error('Error al cargar laboratorios', err)
     })
   }
+
+  eliminar(id: number) {
+    if (confirm('¿Estás seguro de eliminar este laboratorio?')) {
+      this.laboratorioService.eliminarLaboratorio(id).subscribe({
+        next: () => {
+          this.cargarLaboratorios();
+        },
+        error: (err) => {
+          console.error('Error al eliminar', err);
+          alert('No se pudo eliminar el laboratorio.');
+        }
+      });
+    }
+  }
 }

@@ -27,4 +27,8 @@ export class LaboratorioService {
   actualizarLaboratorio(id: number, laboratorio: LaboratorioDTO): Observable<Laboratorio> {
     return this.http.put<Laboratorio>(`${this.apiUrl}/${id}`, laboratorio);
   }
+
+  eliminarLaboratorio(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }
