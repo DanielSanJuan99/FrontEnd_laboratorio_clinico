@@ -3,7 +3,7 @@ import { LabFormComponent } from './lab-form.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LaboratorioService } from '../../../services/laboratorio.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('LabFormComponent', () => {
@@ -70,5 +70,14 @@ describe('LabFormComponent', () => {
     component.guardar();
 
     expect(updateSpy).toHaveBeenCalled();
+  });
+
+  it('debería navegar hacia atrás al llamar a volver()', () => {
+    const router = TestBed.inject(Router);
+    const navigateSpy = spyOn(router, 'navigate');
+
+    component.volver();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/laboratorios']);
   });
 });
