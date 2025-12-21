@@ -48,8 +48,11 @@ import { Laboratorio } from '../../../models/laboratorio';
                   <button [routerLink]="['/laboratorios/editar', lab.id]" class="btn btn-sm btn-outline-secondary me-2">
                     Editar
                   </button>
-                  
-                  </td>
+
+                  <button (click)="eliminar(lab.id)" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </td>
               </tr>
               
               <tr *ngIf="laboratorios.length === 0">
@@ -67,7 +70,7 @@ import { Laboratorio } from '../../../models/laboratorio';
 export class LabListComponent implements OnInit {
   laboratorios: Laboratorio[] = [];
 
-  constructor(private laboratorioService: LaboratorioService) {}
+  constructor(private readonly laboratorioService: LaboratorioService) {}
 
   ngOnInit(): void {
     this.cargarLaboratorios();

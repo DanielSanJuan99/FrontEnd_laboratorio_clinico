@@ -55,4 +55,51 @@ describe('LabListComponent', () => {
     expect(consoleSpy).toHaveBeenCalled();
   });
 
+  it('debería eliminar y recargar la lista si el usuario confirma y el servidor responde OK', () => {
+    spyOn(globalThis, 'confirm').and.returnValue(true);
+
+    const deleteSpy = spyOn(service, 'eliminarLaboratorio').and.returnValue(of(undefined));
+
+    const reloadSpy = spyOn(component, 'cargarLaboratorios');
+
+    component.eliminar(123);
+
+    expect(deleteSpy).toHaveBeenCalledWith(123);
+    expect(reloadSpy).toHaveBeenCalled();
+  });
+
+  it('NO debería eliminar si el usuario cancela la confirmación', () => {
+    spyOn(globalThis, 'confirm').and.returnValue(false);
+    
+    const deleteSpy = spyOn(service, 'eliminarLaboratorio');
+
+    component.eliminar(1);
+
+    expect(deleteSpy).not.toHaveBeenCalled();
+  });
+
+  it('debería manejar errores del servidor al intentar eliminar', () => {
+    spyOn(globalThis, 'confirm').and.returnValue(true);
+
+    spyOn(service, 'eliminarLaboratorio').and.returnValue(throwError(() => new Error('Error al borrar')));
+    
+    const consoleSpy = spyOn(console, 'error');
+
+    component.eliminar(1);
+
+    expect(consoleSpy).toHaveBeenCalled();
+  });
+
+  it('debería mostrar un alert si falla la eliminación', () => {
+    spyOn(globalThis, 'confirm').and.returnValue(true);
+
+    spyOn(service, 'eliminarLaboratorio').and.returnValue(throwError(() => new Error('Backend Error')));
+
+    const alertSpy = spyOn(globalThis, 'alert');
+    spyOn(console, 'error'); 
+
+    component.eliminar(1);
+
+    expect(alertSpy).toHaveBeenCalledWith('No se pudo eliminar el laboratorio.');
+  });
 });
