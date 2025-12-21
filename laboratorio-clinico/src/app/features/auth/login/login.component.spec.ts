@@ -54,7 +54,7 @@ describe('LoginComponent', () => {
     
     const consoleSpy = spyOn(console, 'error');
 
-    component.loginForm.patchValue({ email: 'bad@test.com', password: 'wrong' });
+    component.loginForm.patchValue({ email: 'bad@test.com', password: 'wrong123' });
 
     component.onSubmit();
 
@@ -66,7 +66,7 @@ describe('LoginComponent', () => {
   it('debería redirigir si el login es exitoso', () => {
     const loginSpy = spyOn(authService, 'login').and.returnValue(of({ token: 'fake-jwt-token' }));
     
-    component.loginForm.patchValue({ email: 'admin@duoc.cl', password: '123' });
+    component.loginForm.patchValue({ email: 'admin@duoc.cl', password: '123456' });
     component.onSubmit();
 
     expect(loginSpy).toHaveBeenCalled();
