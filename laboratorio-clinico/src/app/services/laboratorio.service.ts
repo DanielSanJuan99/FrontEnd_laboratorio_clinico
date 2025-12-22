@@ -8,9 +8,9 @@ import { environment } from '../../environments/environments';
   providedIn: 'root'
 })
 export class LaboratorioService {
-  private apiUrl = environment.apiUrlLaboratorios;
+  private readonly apiUrl = environment.apiUrlLaboratorios;
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   obtenerLaboratorios(): Observable<Laboratorio[]> {
     return this.http.get<Laboratorio[]>(this.apiUrl);
@@ -26,5 +26,9 @@ export class LaboratorioService {
 
   actualizarLaboratorio(id: number, laboratorio: LaboratorioDTO): Observable<Laboratorio> {
     return this.http.put<Laboratorio>(`${this.apiUrl}/${id}`, laboratorio);
+  }
+
+  eliminarLaboratorio(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
