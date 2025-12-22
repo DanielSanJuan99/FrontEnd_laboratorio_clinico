@@ -2,5 +2,5 @@ projectKey=laboratorio-clinico-front
 serverUrl=http://localhost:9000
 serverVersion=25.12.0.117093
 dashboardUrl=http://localhost:9000/dashboard?id=laboratorio-clinico-front
-ceTaskId=7c2cb330-1dcb-40da-8169-7e654867dd5c
-ceTaskUrl=http://localhost:9000/api/ce/task?id=7c2cb330-1dcb-40da-8169-7e654867dd5c
+ceTaskId=c88b0816-0a7d-4cfa-85d3-f3f5037f69a4
+ceTaskUrl=http://localhost:9000/api/ce/task?id=c88b0816-0a7d-4cfa-85d3-f3f5037f69a4

@@ -55,10 +55,10 @@ export class ResultadosFormComponent implements OnInit {
   idEditar: number | null = null;
 
   constructor(
-    private fb: FormBuilder,
-    private resultadoService: ResultadoService,
-    private router: Router,
-    private route: ActivatedRoute
+    private readonly fb: FormBuilder,
+    private readonly resultadoService: ResultadoService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       valorResultado: [null, Validators.required],
