@@ -10,9 +10,10 @@ describe('LabFormComponent', () => {
   let component: LabFormComponent;
   let fixture: ComponentFixture<LabFormComponent>;
   let service: LaboratorioService;
+  let router: Router
 
   let routeSpy = {
-    snapshot: { paramMap: { get: jasmine.createSpy('get') } }
+    snapshot: { paramMap: { get: jasmine.createSpy('get').and.returnValue(null) } }
   };
 
   beforeEach(async () => {
@@ -27,6 +28,12 @@ describe('LabFormComponent', () => {
     fixture = TestBed.createComponent(LabFormComponent);
     component = fixture.componentInstance;
     service = TestBed.inject(LaboratorioService);
+    router = TestBed.inject(Router);
+  });
+
+  it('debería crearse', () => {
+    fixture.detectChanges();
+    expect(component).toBeTruthy();
   });
 
   it('MODO CREAR: debería iniciar con formulario vacío', () => {
@@ -79,5 +86,44 @@ describe('LabFormComponent', () => {
     component.volver();
 
     expect(navigateSpy).toHaveBeenCalledWith(['/laboratorios']);
+  });
+
+  it('debería llamar a guardarLaboratorio (Crear) si es un formulario válido y NO es edición', () => {
+    component.esEdicion = false;
+
+    component.form.patchValue({
+      nombre: 'Lab Test',
+      telefono: '123456',
+      email: 'test@lab.com',
+      convenioId: 1
+    });
+
+    const createSpy = spyOn(service, 'guardarLaboratorio').and.returnValue(of({} as any)); // Retorna cualquier cosa
+    const routerSpy = spyOn(router, 'navigate');
+
+    component.guardar();
+
+    expect(createSpy).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith(['/laboratorios']);
+  });
+
+  it('debería llamar a actualizarLaboratorio (Editar) si es edición', () => {
+    component.esEdicion = true;
+    component.idEditar = 10;
+    
+    component.form.patchValue({
+      nombre: 'Lab Edit',
+      telefono: '123',
+      email: 'e@e.com',
+      convenioId: 2
+    });
+
+    const updateSpy = spyOn(service, 'actualizarLaboratorio').and.returnValue(of({} as any));
+    const routerSpy = spyOn(router, 'navigate');
+
+    component.guardar();
+
+    expect(updateSpy).toHaveBeenCalledWith(10, jasmine.any(Object));
+    expect(routerSpy).toHaveBeenCalledWith(['/laboratorios']);
   });
 });

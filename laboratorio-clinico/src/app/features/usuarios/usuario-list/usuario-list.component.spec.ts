@@ -3,7 +3,7 @@ import { UsuarioListComponent } from './usuario-list.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UsuarioService } from '../../../services/usuario.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('UsuarioListComponent', () => {
   let component: UsuarioListComponent;
@@ -37,7 +37,7 @@ describe('UsuarioListComponent', () => {
   });
 
   it('debería eliminar un usuario si se confirma el diálogo', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
+    spyOn(globalThis, 'confirm').and.returnValue(true);
 
     const deleteSpy = spyOn(service, 'eliminarUsuario').and.returnValue(of(void 0));
 
@@ -50,11 +50,21 @@ describe('UsuarioListComponent', () => {
   });
 
   it('NO debería eliminar si el usuario cancela el diálogo', () => {
-    spyOn(window, 'confirm').and.returnValue(false);
+    spyOn(globalThis, 'confirm').and.returnValue(false);
     const deleteSpy = spyOn(service, 'eliminarUsuario');
 
     component.eliminar(123);
 
     expect(deleteSpy).not.toHaveBeenCalled();
+  });
+
+  it('debería manejar error al eliminar', () => {
+    spyOn(globalThis, 'confirm').and.returnValue(true);
+    spyOn(service, 'eliminarUsuario').and.returnValue(throwError(() => new Error('Error')));
+    const alertSpy = spyOn(globalThis, 'alert').and.stub();
+
+    component.eliminar(1);
+
+    expect(alertSpy).toHaveBeenCalled();
   });
 });

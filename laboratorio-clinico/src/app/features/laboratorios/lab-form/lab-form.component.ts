@@ -53,10 +53,10 @@ export class LabFormComponent implements OnInit {
   idEditar: number | null = null;
 
   constructor(
-    private fb: FormBuilder,
-    private laboratorioService: LaboratorioService,
-    private router: Router,
-    private route: ActivatedRoute
+    private readonly fb: FormBuilder,
+    private readonly laboratorioService: LaboratorioService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       nombre: ['', Validators.required],

@@ -70,7 +70,7 @@ import { Usuario } from '../../../models/usuario';
 export class UsuarioListComponent implements OnInit {
   usuarios: Usuario[] = [];
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(private readonly usuarioService: UsuarioService) {}
 
   ngOnInit(): void {
     this.cargarUsuarios();
@@ -84,8 +84,14 @@ export class UsuarioListComponent implements OnInit {
 
   eliminar(id: number) {
     if (confirm('¿Estás seguro de eliminar este usuario?')) {
-      this.usuarioService.eliminarUsuario(id).subscribe(() => {
-        this.cargarUsuarios();
+      this.usuarioService.eliminarUsuario(id).subscribe({
+        next: () => {
+          this.cargarUsuarios();
+        },
+        error: (err) => {
+          console.error('Error al eliminar', err);
+          alert('No se pudo eliminar el usuario.'); // <--- El test espera esto
+        }
       });
     }
   }

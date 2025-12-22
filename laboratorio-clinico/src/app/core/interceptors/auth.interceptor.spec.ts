@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './auth.interceptors';
 import { AuthService } from '../../services/auth.service';
 
@@ -12,7 +12,10 @@ describe('AuthInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(withInterceptors([authInterceptor])), 
+        provideHttpClient(withInterceptors([authInterceptor])),
+
+        provideHttpClientTesting(),
+
         AuthService
       ]
     });
@@ -22,7 +25,9 @@ describe('AuthInterceptor', () => {
     authService = TestBed.inject(AuthService);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   it('debería agregar el header Authorization si hay token', () => {
     spyOn(authService, 'getToken').and.returnValue('fake-token');
