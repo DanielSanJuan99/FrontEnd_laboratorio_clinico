@@ -3,6 +3,8 @@ import { UsuarioListComponent } from './features/usuarios/usuario-list/usuario-l
 import { UsuarioFormComponent } from './features/usuarios/usuario-form/usuario-form.component';
 import { LabListComponent } from './features/laboratorios/lab-list/lab-list.component';
 import { LabFormComponent } from './features/laboratorios/lab-form/lab-form.component';
+import { ResultadosListComponent } from './features/resultados/resultados-list/resultados-list.component';
+import { ResultadosFormComponent } from './features/resultados/resultados-form/resultados-form.component';
 import { LoginComponent } from './features/auth/login/login.component';
 
 export const routes: Routes = [
@@ -14,10 +16,15 @@ export const routes: Routes = [
   { path: 'usuarios/crear', component: UsuarioFormComponent },
   { path: 'usuarios/editar/:id', component: UsuarioFormComponent },
 
-  // Rutas de Laboratorios (Haz lo mismo con tus componentes de lab)
+  // Rutas de Laboratorios
   { path: 'laboratorios', component: LabListComponent },
   { path: 'laboratorios/crear', component: LabFormComponent },
   { path: 'laboratorios/editar/:id', component: LabFormComponent },
+
+  // Rutas de Resultados
+  { path: 'resultados', component: ResultadosListComponent },
+  { path: 'resultados/crear', component: ResultadosFormComponent },
+  { path: 'resultados/editar/:id', component: ResultadosFormComponent },
 
   // Ruta por defecto
   { path: '', redirectTo: 'login', pathMatch: 'full' },

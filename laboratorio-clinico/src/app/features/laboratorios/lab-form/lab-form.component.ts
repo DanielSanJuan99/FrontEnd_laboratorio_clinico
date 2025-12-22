@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LaboratorioService } from '../../../services/laboratorio.service';
-import { Laboratorio, LaboratorioDTO } from '../../../models/laboratorio';
+import { LaboratorioDTO } from '../../../models/laboratorio';
 
 @Component({
   selector: 'app-lab-form',
