@@ -118,7 +118,7 @@ npm install -g @angular/cli@19
 
 ```bash
 # 1. Clonar el repositorio
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/DanielSanJuan99/FrontEnd_laboratorio_clinico
 cd laboratorio-clinico
 
 # 2. Instalar dependencias
